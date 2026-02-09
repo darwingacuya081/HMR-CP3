@@ -272,7 +272,8 @@ function buildPayload(){
   const manpowerAll = [
     ...serializeMan(rowsHEO).map(r => ({ role:"HEO", ...r })),
     ...serializeMan(rowsSpotter).map(r => ({ role:"Spotter", ...r })),
-    ...serializeMan(rowsHelper).map(r => ({ role:"Helper", ...r }))
+    ...serializeMan(rowsHelper).map(r => ({ role:"Helper", ...r })),
+    ...serializeMan(rowsFlagman).map(r => ({ role:"Flagman", ...r }))
   ];
 
   // ✅ Filter rule: don't submit if Work Hours is blank (or not a number)
