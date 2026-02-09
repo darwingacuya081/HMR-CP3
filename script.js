@@ -8,6 +8,7 @@ const statusEl = document.getElementById("status");
 const rowsHEO = document.getElementById("rows-HEO");
 const rowsSpotter = document.getElementById("rows-Spotter");
 const rowsHelper = document.getElementById("rows-Helper");
+const rowsFlagman = document.getElementById("rows-Flagman");
 const rowsEquip = document.getElementById("rows-Equipment");
 
 const elDraftKey = document.getElementById("draftKey");
@@ -37,7 +38,8 @@ function save(){
     manpower: {
       HEO: serializeMan(rowsHEO),
       Spotter: serializeMan(rowsSpotter),
-      Helper: serializeMan(rowsHelper)
+      Helper: serializeMan(rowsHelper),
+      Flagman: serializeMan(rowsFlagman)
     },
     equipment: serializeEquip(rowsEquip)
   };
@@ -58,6 +60,7 @@ function load(){
     for(let i=0;i<3;i++) addManRow("HEO");
     for(let i=0;i<3;i++) addManRow("Spotter");
     for(let i=0;i<3;i++) addManRow("Helper");
+    for(let i=0;i<3;i++) addManRow("Flagman");
     addEquipRow(); addEquipRow();
     return;
   }
@@ -77,6 +80,7 @@ function load(){
     (data.manpower?.HEO || []).forEach(r => addManRow("HEO", r));
     (data.manpower?.Spotter || []).forEach(r => addManRow("Spotter", r));
     (data.manpower?.Helper || []).forEach(r => addManRow("Helper", r));
+    (data.manpower?.Flagman || []).forEach(r => addManRow("Flagman", r));
 
     (data.equipment || []).forEach(r => addEquipRow(r));
 
@@ -84,6 +88,7 @@ function load(){
     if(!rowsHEO.children.length) addManRow("HEO");
     if(!rowsSpotter.children.length) addManRow("Spotter");
     if(!rowsHelper.children.length) addManRow("Helper");
+    if(!rowsHelper.children.length) addManRow("Flagman");
     if(!rowsEquip.children.length) addEquipRow();
 
     setStatus("Loaded saved form (OT cleared by rule).");
@@ -126,6 +131,7 @@ function getManContainer(role){
   if (role === "HEO") return rowsHEO;
   if (role === "Spotter") return rowsSpotter;
   if (role === "Helper") return rowsHelper;
+  if (role === "Flagman") return rowsHelper;
   return null;
 }
 
@@ -133,8 +139,15 @@ function addManRow(role, data = {}){
   const wrap = document.createElement("div");
   wrap.className = "rowMan";
 
+  const roleToDatalist = {
+    HEO: "dl-heo",
+    Spotter: "dl-spotter",
+    Helper: "dl-helper",
+    Flagman: "dl-flagman"
+  };
+  
   const name = makeInput("text","Name", data.name || "");
-  name.setAttribute("list", role === "HEO" ? "dl-heo" : role === "Spotter" ? "dl-spotter" : "dl-helper");
+  name.setAttribute("list", roleToDatalist[role] || "dl-helper");
 
   const work = makeInput("number","Work Hours", data.workHours || "");
   work.step = "0.5";
@@ -351,6 +364,7 @@ async function refreshMasterData() {
     fillDatalist("dl-heo", d.HEO || []);
     fillDatalist("dl-spotter", d.Spotter || []);
     fillDatalist("dl-helper", d.Helper || []);
+    fillDatalist("dl-flagman", d.Flagman || []);
     fillDatalist("dl-equipment", d.Equipment || []);
 
     setStatus("Autocomplete lists updated from MasterData ✅");
@@ -403,6 +417,7 @@ function buildDraftObject() {
       HEO: serializeMan(rowsHEO),
       Spotter: serializeMan(rowsSpotter),
       Helper: serializeMan(rowsHelper),
+      Flagman: serializeMan(rowsFlagman),
     },
     equipment: serializeEquip(rowsEquip)
   };
@@ -445,13 +460,14 @@ function saveLocalSilent(){
     manpower: {
       HEO: serializeMan(rowsHEO),
       Spotter: serializeMan(rowsSpotter),
-      Helper: serializeMan(rowsHelper)
+      Helper: serializeMan(rowsHelper),
+      Flagman: serializeMan(rowsFlagman)
     },
     equipment: serializeEquip(rowsEquip)
   };
 
   // OT rule: blank OT before saving
-  ["HEO","Spotter","Helper"].forEach(role => {
+  ["HEO","Spotter","Helper","Flagman"].forEach(role => {
     data.manpower[role] = data.manpower[role].map(r => ({...r, otHours:""}));
   });
 
@@ -495,11 +511,13 @@ function loadDraftFromCloud() {
       rowsHEO.innerHTML = "";
       rowsSpotter.innerHTML = "";
       rowsHelper.innerHTML = "";
+      rowsFlagman.innerHTML = "";
       rowsEquip.innerHTML = "";
 
       (d.manpower?.HEO || []).forEach(r => addManRow("HEO", r));
       (d.manpower?.Spotter || []).forEach(r => addManRow("Spotter", r));
       (d.manpower?.Helper || []).forEach(r => addManRow("Helper", r));
+      (d.manpower?.Flagman || []).forEach(r => addManRow("Flagman", r));
       (d.equipment || []).forEach(r => addEquipRow(r));
 
       saveLocalSilent()
