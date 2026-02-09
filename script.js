@@ -45,7 +45,7 @@ function save(){
   };
 
   // OT rule: blank OT before saving
-  ["HEO","Spotter","Helper"].forEach(role => {
+  ["HEO","Spotter","Helper","Flagman"].forEach(role => {
     data.manpower[role] = data.manpower[role].map(r => ({...r, otHours:""}));
   });
 
@@ -75,6 +75,7 @@ function load(){
     rowsHEO.innerHTML = "";
     rowsSpotter.innerHTML = "";
     rowsHelper.innerHTML = "";
+    rowsFlagman.innerHTML = "";
     rowsEquip.innerHTML = "";
 
     (data.manpower?.HEO || []).forEach(r => addManRow("HEO", r));
@@ -88,7 +89,7 @@ function load(){
     if(!rowsHEO.children.length) addManRow("HEO");
     if(!rowsSpotter.children.length) addManRow("Spotter");
     if(!rowsHelper.children.length) addManRow("Helper");
-    if(!rowsHelper.children.length) addManRow("Flagman");
+    if(!rowsFlagman.children.length) addManRow("Flagman");
     if(!rowsEquip.children.length) addEquipRow();
 
     setStatus("Loaded saved form (OT cleared by rule).");
@@ -131,7 +132,7 @@ function getManContainer(role){
   if (role === "HEO") return rowsHEO;
   if (role === "Spotter") return rowsSpotter;
   if (role === "Helper") return rowsHelper;
-  if (role === "Flagman") return rowsHelper;
+  if (role === "Flagman") return rowsFlagman;
   return null;
 }
 
@@ -251,7 +252,7 @@ document.querySelectorAll("[data-add]").forEach(btn => {
 document.getElementById("addEquipment").addEventListener("click", () => addEquipRow());
 
 document.getElementById("resetOt").addEventListener("click", () => {
-  [rowsHEO, rowsSpotter, rowsHelper].forEach(container => {
+  [rowsHEO, rowsSpotter, rowsHelper, rowsFlagman].forEach(container => {
     [...container.children].forEach(r => {
       const ot = r.querySelectorAll("input")[2];
       if(ot) ot.value = "";
